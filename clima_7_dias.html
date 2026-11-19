@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101a35">
+<title>Clima — Tu semana, más clara</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1226;--panel:#131f3d;--panel2:#19294c;--muted:#a9b8d6;--text:#f5f8ff;--accent:#8bd8ff;--line:#ffffff18}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:radial-gradient(ellipse at 15% 0%,#244a77 0,transparent 38%),radial-gradient(ellipse at 95% 25%,#42356f 0,transparent 30%),var(--bg)}
+main{width:min(1080px,calc(100% - 32px));margin:0 auto;padding:38px 0 56px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}.brand{font-weight:800;letter-spacing:.08em;font-size:14px}.brand span{color:var(--accent)}.tag{color:var(--muted);font-size:13px}
+h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.04em;margin:0 0 8px}.sub{color:var(--muted);margin:0 0 26px}
+.searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}.searchbar input{flex:1;min-width:190px;background:#101b36;border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--text);font:inherit;outline:none}.searchbar input:focus{border-color:var(--accent)}button{border:0;border-radius:14px;padding:13px 17px;font:700 14px inherit;cursor:pointer;background:var(--accent);color:#071526}button.secondary{background:#ffffff12;color:var(--text);border:1px solid var(--line)}button:hover{filter:brightness(1.08)}
+.status{color:var(--muted);font-size:13px;min-height:20px;margin:0 0 16px}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.panel{background:linear-gradient(145deg,#1a2b50eF,#111d38f2);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 18px 60px #0002}.current{min-height:250px;display:flex;flex-direction:column;justify-content:space-between}.place{font-size:15px;color:var(--muted)}.current-main{display:flex;align-items:center;gap:18px}.weather-icon{font-size:76px;line-height:1}.temp{font-size:clamp(54px,8vw,78px);font-weight:750;letter-spacing:-.07em}.desc{color:var(--muted);font-size:16px}.highlow{font-size:14px;color:var(--muted);margin-top:8px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:#ffffff09;border:1px solid var(--line);border-radius:17px;padding:17px}.stat small{display:block;color:var(--muted);margin-bottom:9px}.stat strong{font-size:21px}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:34px 0 14px}.section-title h2{font-size:21px;margin:0}.section-title span{font-size:12px;color:var(--muted)}
+.forecast{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}.day{background:#14213e;border:1px solid var(--line);border-radius:18px;padding:16px 10px;text-align:center;min-width:0}.day .name{font-size:13px;font-weight:700}.day .date{font-size:11px;color:var(--muted);margin-top:4px}.day .icon{font-size:30px;margin:14px 0}.day .range{font-weight:750;font-size:14px}.day .rain{font-size:11px;color:var(--accent);margin-top:9px}
+.note{color:var(--muted);font-size:12px;line-height:1.6;margin-top:20px}.footer{text-align:center;color:#8091b4;font-size:12px;margin-top:34px}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.forecast{grid-template-columns:repeat(2,1fr)}.day:last-child{grid-column:span 2}.top{align-items:flex-start;flex-direction:column}}
+@media(min-width:520px) and (max-width:760px){.forecast{grid-template-columns:repeat(4,1fr)}.day:last-child{grid-column:auto}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="brand">☁ <span>CLIMA</span> / TU SEMANA</div><div class="tag">Previsión local · 7 días</div></div>
+  <h1>El tiempo, sin sorpresas.</h1>
+  <p class="sub">Consulta qué tiempo hará en tu localidad durante los próximos siete días.</p>
+  <div class="searchbar">
+    <input id="city" type="search" placeholder="Escribe tu localidad (ej. Málaga)" aria-label="Localidad">
+    <button id="search">Buscar localidad</button>
+    <button id="locate" class="secondary">◎ Mi ubicación</button>
+  </div>
+  <p id="status" class="status" role="status">Busca una localidad o permite el acceso a tu ubicación para empezar.</p>
+  <section class="hero" aria-live="polite">
+    <div class="panel current">
+      <div><div class="place" id="place">Tu localidad</div><div class="desc" id="today">Previsión de hoy</div></div>
+      <div class="current-main"><div class="weather-icon" id="currentIcon">🌤️</div><div><div class="temp" id="currentTemp">--°</div><div class="desc" id="currentDesc">Esperando ubicación</div><div class="highlow" id="currentRange">Máx. --° · Mín. --°</div></div></div>
+    </div>
+    <div class="panel stats">
+      <div class="stat"><small>💧 Prob. de lluvia hoy</small><strong id="rain">--%</strong></div>
+      <div class="stat"><small>🌬️ Viento ahora</small><strong id="wind">-- km/h</strong></div>
+      <div class="stat"><small>🌡️ Sensación térmica</small><strong id="feels">--°</strong></div>
+      <div class="stat"><small>☀️ Índice UV máx.</small><strong id="uv">--</strong></div>
+    </div>
+  </section>
+  <div class="section-title"><h2>Los próximos 7 días</h2><span id="updated">Datos meteorológicos</span></div>
+  <section class="forecast" id="forecast" aria-live="polite">
+    <div class="day">Los datos aparecerán aquí.</div>
+  </section>
+  <p class="note">La previsión es orientativa y puede cambiar. Los datos meteorológicos se consultan en Open-Meteo. La ubicación del dispositivo solo se utiliza si pulsas «Mi ubicación».</p>
+  <div class="footer">Hecho para mirar al cielo con un poco más de información ✦</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const weather={
+  0:["Despejado","☀️"],1:["Mayormente despejado","🌤️"],2:["Parcialmente nublado","⛅"],3:["Nublado","☁️"],
+  45:["Niebla","🌫️"],48:["Niebla con escarcha","🌫️"],51:["Llovizna ligera","🌦️"],53:["Llovizna","🌦️"],55:["Llovizna intensa","🌧️"],
+  56:["Llovizna helada ligera","🌧️"],57:["Llovizna helada intensa","🌧️"],61:["Lluvia ligera","🌦️"],63:["Lluvia moderada","🌧️"],65:["Lluvia intensa","🌧️"],
+  66:["Lluvia helada ligera","🌧️"],67:["Lluvia helada intensa","🌧️"],71:["Nieve ligera","🌨️"],73:["Nieve moderada","🌨️"],75:["Nieve intensa","❄️"],
+  77:["Granos de nieve","🌨️"],80:["Chubascos ligeros","🌦️"],81:["Chubascos moderados","🌧️"],82:["Chubascos fuertes","⛈️"],
+  85:["Chubascos de nieve","🌨️"],86:["Nevadas fuertes","❄️"],95:["Tormenta","⛈️"],96:["Tormenta con granizo","⛈️"],99:["Tormenta fuerte con granizo","⛈️"]
+};
+function info(code){return weather[code]||["Tiempo variable","🌤️"]}
+function dayName(date,index){if(index===0)return"Hoy";if(index===1)return"Mañana";return new Intl.DateTimeFormat("es-ES",{weekday:"short"}).format(new Date(date+"T12:00:00")).replace(".","")}
+function setStatus(msg){$("status").textContent=msg}
+async function loadWeather(lat,lon,name){
+  try{
+    setStatus("Consultando la previsión…");
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&forecast_days=7&timezone=auto`;
+    const res=await fetch(url);if(!res.ok)throw Error("No se pudo obtener la previsión");const d=await res.json();
+    const c=d.current,day=d.daily,wx=info(c.weather_code);
+    $("place").textContent=name;$("today").textContent="Ahora · "+new Intl.DateTimeFormat("es-ES",{hour:"2-digit",minute:"2-digit",timeZone:d.timezone}).format(new Date(c.time));
+    $("currentIcon").textContent=wx[1];$("currentTemp").textContent=Math.round(c.temperature_2m)+"°";$("currentDesc").textContent=wx[0];
+    $("currentRange").textContent=`Máx. ${Math.round(day.temperature_2m_max[0])}° · Mín. ${Math.round(day.temperature_2m_min[0])}°`;
+    $("rain").textContent=(day.precipitation_probability_max[0]??0)+"%";$("wind").textContent=Math.round(c.wind_speed_10m)+" km/h";
+    $("feels").textContent=Math.round(c.apparent_temperature)+"°";$("uv").textContent=day.uv_index_max[0]??"—";
+    $("forecast").innerHTML=day.time.map((date,i)=>{const w=info(day.weather_code[i]);const dt=new Date(date+"T12:00:00");const label=i<2?dayName(date,i):dayName(date,i);return `<article class="day"><div class="name">${label}</div><div class="date">${new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"}).format(dt)}</div><div class="icon">${w[1]}</div><div class="range">${Math.round(day.temperature_2m_max[i])}° <span style="color:#9aaccb;font-weight:500">${Math.round(day.temperature_2m_min[i])}°</span></div><div class="rain">💧 ${day.precipitation_probability_max[i]??0}% lluvia</div></article>`}).join("");
+    $("updated").textContent="Actualizado ahora · "+(d.timezone||"hora local");setStatus("Previsión cargada correctamente.");
+  }catch(e){setStatus("No se ha podido cargar el tiempo. Comprueba tu conexión e inténtalo de nuevo.");}
+}
+async function searchCity(){
+  const q=$("city").value.trim();if(!q){setStatus("Escribe primero el nombre de una localidad.");return}
+  try{setStatus("Buscando localidad…");const r=await fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(q)+"&count=1&language=es&format=json");const j=await r.json();if(!j.results?.length){setStatus("No encontramos esa localidad. Prueba con otro nombre.");return}const p=j.results[0];loadWeather(p.latitude,p.longitude,[p.name,p.admin1,p.country].filter(Boolean).join(", "));}catch(e){setStatus("No se pudo buscar la localidad. Revisa tu conexión.");}
+}
+$("search").addEventListener("click",searchCity);$("city").addEventListener("keydown",e=>{if(e.key==="Enter")searchCity()});
+$("locate").addEventListener("click",()=>{if(!navigator.geolocation){setStatus("Tu navegador no permite geolocalización.");return}setStatus("Esperando permiso de ubicación…");navigator.geolocation.getCurrentPosition(pos=>loadWeather(pos.coords.latitude,pos.coords.longitude,"Tu ubicación"),()=>setStatus("No se pudo acceder a tu ubicación. Puedes buscar tu localidad manualmente."),{enableHighAccuracy:false,timeout:10000});});
+loadWeather(40.4168,-3.7038,"Madrid, España");
+</script>
+</body>
+</html>
